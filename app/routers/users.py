@@ -75,7 +75,7 @@ async def create_user(email: str = Form(...),
         image=None,
         image_mime=new_user.image_mime,
         image_url=f"/users/{new_user.id}/image"
-        )
+    )
 
 # @router.get("/", response_model=schemas.UserProfile)
 # def get_profile(current_user: models.User = Depends(get_current_user)):
@@ -94,9 +94,19 @@ def get_profile(db: Session = Depends(get_db)):
             name=u.name,
             email=u.email,
             created_at=u.created_at,
-            image=image_base64,
-            image_mime=u.image_mime
+            image=None,
+            image_mime=u.image_mime,
+            image_url=f"/users/{u.id}/image" 
         ))
+        return result
+
+
+@router.get("/{user_id}/image")
+def get_user_image(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not user or not user.image:
+        return Response(status_code=status.HTTP_404_NOT_FOUND, detail=f"Image not found")
+    return Response(content=user.image, media_type=user.image_mime)
 
 
 
