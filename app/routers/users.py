@@ -67,38 +67,39 @@ async def create_user(email: str = Form(...),
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    return new_user
+    return schemas.User(
+        id=new_user.id,
+        email=new_user.email,
+        name=new_user.name,
+        created_at=new_user.created_at,
+        image=None,
+        image_mime=new_user.image_mime,
+        image_url=f"/users/{new_user.id}/image"
+        )
 
 # @router.get("/", response_model=schemas.UserProfile)
 # def get_profile(current_user: models.User = Depends(get_current_user)):
 #     return current_user
 
 
-@router.get("/", response_model=List[schemas.User])
+@router.get("/", response_model=List[schemas.User])    
 def get_profile(db: Session = Depends(get_db)):
     users = db.query(models.User).all()
     
     result = []
     for u in users:
+        image_base64 = base64.b64encode(u.image).decode("utf-8") if u.image else None
         result.append(schemas.User(
             id=u.id,
             name=u.name,
             email=u.email,
             created_at=u.created_at,
-            image=None,  # don't include the full image here
-            image_mime=u.image_mime,
-            image_url=f"/users/{u.id}/image"  # new endpoint for image
+            image=image_base64,
+            image_mime=u.image_mime
         ))
-    return result
 
 
 
-@router.get("/{user_id}/image")
-def get_user_image(user_id: int, db: Session = Depends(get_db)):
-    user = db.query(models.User).filter(models.User.id == user_id).first()
-    if not user or not user.image:
-        return Response(status_code=404)
-    return Response(content=user.image, media_type=user.image_mime)
 
 
 # @router.get("/users/{user_id}/image")
