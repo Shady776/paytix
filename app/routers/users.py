@@ -98,7 +98,7 @@ def get_profile(db: Session = Depends(get_db)):
             image_mime=u.image_mime,
             image_url=f"/users/{u.id}/image" 
         ))
-        return result
+    return result
 
 
 @router.get("/{user_id}/image")
