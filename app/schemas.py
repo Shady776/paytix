@@ -35,7 +35,8 @@ class TokenData(BaseModel):
 
 class userAppend(BaseModel):
     id: int
-    name: str
+    first_name: str
+    last_name: str
     email: EmailStr
     class Config:
         from_attributes = True
