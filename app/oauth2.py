@@ -5,6 +5,7 @@ from fastapi import Depends, status, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session    
 from .config import settings
+from fastapi import Security
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
@@ -48,3 +49,16 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     user = db.query(models.User).filter(models.User.id==token.id).first()
     return user
     # return verify_access_token(token, credentials_exception)
+    
+def get_current_user_optional(token: str = Security(oauth2_scheme), db: Session = Depends(database.get_db)):
+    if token is None:
+        return None
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: int = payload.get("user_id")
+        if user_id is None:
+            return None
+    except JWTError:
+        return None
+
+    return db.query(models.User).filter(models.User.id == user_id).first()
