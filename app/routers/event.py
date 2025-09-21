@@ -30,10 +30,18 @@ def create_event(event: schemas.EventCreate,
                 #   image_file: Optional[UploadFile] = None,
                   db: Session = Depends(get_db), 
                   current_user: int = Depends(get_current_user)):
-        event_creation = db.query(models.Event).filter(models.Event.location == event.location).first()
+        event_creation = db.query(models.Event).filter(models.Event.location == event.location).order_by(models.Event.end_time.desc()).first()
+                                                    #    models.Event.end_time > datetime.now() ).first()
    
-        if event_creation:
-                raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, detail=f"Event already exist")
+        # if event_creation:
+        #         raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
+        #                             detail=f"Location '{event.location}' is in use until {event.end_time}")
+        # next_available_day = event.end_time.date() + timedelta(days=1)
+        # if event.start_time.date() < next_available_day:
+        #         raise HTTPException(
+        #         status_code=400,
+        #         detail=f"Location '{event.location}' will only be available from {next_available_day}"
+        #     )
            
     
     

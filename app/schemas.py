@@ -68,66 +68,6 @@ class getImage(imageVerification):
     email: str
     
 
-class TicketBase(BaseModel):
-    name: str
-    price: float = 0.0
-    currency: Literal["NGN", "USD"] = "NGN"
-    quantity_total: int
-    per_person_limit: Optional[int] = None
-    is_seat_based: bool = False
-
-class TicketCreate(TicketBase):
-    event_id: int
-
-class TicketOut(TicketBase):
-    id: int
-    event_id: int
-    quantity_sold: int
-    created_at: datetime
-
-    class Config:
-        from_attributes = True
-
-
-# ---------- Invite Schemas ----------
-class EventInviteBase(BaseModel):
-    user_id: Optional[int] = None  # null = not registered yet
-
-class EventInviteCreate(EventInviteBase):
-    event_id: int
-
-class EventInviteOut(EventInviteBase):
-    id: int
-    event_id: int
-    status: Literal["pending", "accepted", "declined"]
-    created_at: datetime
-
-    class Config:
-        from_attributes = True
-
-
-# ---------- Order Schemas ----------
-class OrderBase(BaseModel):
-    quantity: int
-    amount_paid: float
-    payment_status: Literal["pending", "paid", "failed"] = "pending"
-    paystack_reference: Optional[str] = None
-
-class OrderCreate(OrderBase):
-    user_id: int
-    event_id: int
-    ticket_id: int
-
-class OrderOut(OrderBase):
-    id: int
-    user_id: int
-    event_id: int
-    ticket_id: int
-    created_at: datetime
-
-    class Config:
-        from_attributes = True
-
 
 class EventBase(BaseModel):
         title: str
@@ -135,8 +75,10 @@ class EventBase(BaseModel):
         category: str
         start_date: date
         end_date: Optional[date] = None
-        start_time: str
+        start_time: time
+        end_time: time
         location: Optional[str] = None
+        price: Optional[float] = None
         capacity: int
         visibility: str
         image_url: Optional[str] = None
@@ -168,6 +110,7 @@ class EventUpdate(BaseModel):
     start_time: Optional[time] = None
     end_time: Optional[time] = None
     capacity: Optional[int] = None
+    price: Optional[float] = None
     visibility: Optional[Literal["public", "private"]] = None
     image_url: Optional[str] = None     
     image_file: Optional[bytes] = None  
@@ -185,6 +128,7 @@ class EventOut(BaseModel):
     end_date: Optional[date] 
     start_time: time
     end_time: Optional[time]
+    price: float
     capacity: Optional[int]
     visibility: str
     event_link: Optional[str]
@@ -207,3 +151,5 @@ class EventDetail(EventOut):
 class EventInviteToken(BaseModel):
     invite_token: str
     invite_url: str
+    
+

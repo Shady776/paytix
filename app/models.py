@@ -57,6 +57,7 @@ class Event(Base):
     end_date = Column(Date, nullable=True)
     start_time = Column(Time, nullable=False)
     end_time = Column(Time, nullable=True)
+    price = Column(DECIMAL(10, 2), nullable=True)
     capacity = Column(Integer, nullable=True)  
     image_url = Column(String, nullable=True)       
     image_file = Column(LargeBinary, nullable=True) 
