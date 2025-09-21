@@ -143,10 +143,6 @@ class EventOut(BaseModel):
         from_attributes = True
              
 
-
-class EventDetail(EventOut):
-    tickets: List[TicketOut] = []
-    invites: List[EventInviteOut] = []
     
 class EventInviteToken(BaseModel):
     invite_token: str
